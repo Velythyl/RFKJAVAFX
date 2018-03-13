@@ -59,8 +59,8 @@ public class Grille {
 		}
 		
 		/*
-		 * Ganaration des clas
-		 * On passe dans chaque piace et on y ganare alaatoirement un new Point,
+		 * Ganaration des cles
+		 * On passe dans chaque piece et on y genere aleatoirement un new Point,
 		 * puis une new Cle avec ce point
 		 */
 		for(int counter = 0; counter<nbrPiecesX*nbrPiecesY; counter++) {
@@ -76,7 +76,7 @@ public class Grille {
 		}
 		
 		/*
-		 * Ganaration des NonKitten
+		 * Generation des NonKitten
 		 */
 		for(int counter=nbrNonKitten; counter>0; counter--) {
 			Point posRand = randomEmptyCell();
@@ -84,7 +84,7 @@ public class Grille {
 		}
 		
 		/*
-		 * Ganaration du teleporteur
+		 * Generation du teleporteur
 		 */
 		Point posTel = randomEmptyCell();
 		grille[posTel.getX()][posTel.getY()] = new Teleporteur(posTel);
@@ -132,7 +132,7 @@ public class Grille {
 	}
 	
 	/**
-	 * Indique si le daplacement vers une case est possible
+	 * Indique si le deplacement vers une case est possible
 	 * True si on ne tente pas d'aller vers un mur ou une porte
 	 * (et qu'on a pas de clas)
 	 * 
@@ -186,8 +186,10 @@ public class Grille {
 					grid.add(grille[x][y].getRepresentation());
 				}
 			}
+			
+			grid.add("NEXT");
 	    }
-
+	    grid.remove(grid.size()-1);
 	    return grid.toArray(new String[grid.size()]);
 	}
 	

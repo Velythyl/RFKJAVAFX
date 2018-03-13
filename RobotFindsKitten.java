@@ -11,18 +11,23 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 		this.grille.generateKitten(kittenName);
 	}
 	
-	public ArrayList<String[]> turn(char tempMove) {
+	public boolean getTele() {
+		return this.robot.getTele();
+	}
+	
+	public ArrayList<String[]> turn(String tempMove) {
 		String okMoves = "wasd";
 		String[] affichage;
 		String[] message = {""};
 		String[] robotStatus = {""};
+		String[] winCondition = {"false"};
 		
 		if (robot.getTele()) okMoves = "wasdTt";
 		if (okMoves.indexOf(tempMove)==-1) {
 			affichage = this.grille.afficher(robot);
 			
 		} else {
-			String move = ""+tempMove;	
+			String move = tempMove;	
 			Point tempPoint;
 			int futureX = robot.getX();
 			int futureY = robot.getY();
@@ -55,12 +60,14 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 			if(robot.getTele()) temp = "T";
 			robotStatus[0] = robot.getNom() + "[" + robot.getKey() + "]" + temp;
 			affichage = this.grille.afficher(robot);
+			winCondition[0] = ""+this.robot.getWinCondition();
 		}
 		
 		ArrayList<String[]> messStatusAffi = new ArrayList<>();
 		messStatusAffi.add(message);
 		messStatusAffi.add(robotStatus);
 		messStatusAffi.add(affichage);
+		messStatusAffi.add(winCondition);
 		
 		return messStatusAffi;
 	}
