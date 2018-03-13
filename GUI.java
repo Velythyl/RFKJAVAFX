@@ -45,29 +45,29 @@ public class GUI extends Application {
 		
 		final String[] nomKitten = {""};
 		final String[] nomRobot = {""};
-		final boolean[] hasNames = {false};
 		
-		submit.setOnAction(new EventHandler<ActionEvent>() {	//https://docs.oracle.com/javafx/2/ui_controls/text-field.htm
-			@Override
-		    public void handle(ActionEvent e) {
-		        if (rKitten.getText() != null && !rKitten.getText().isEmpty() &&
-		        		rRobot.getText() != null && !rKitten.getText().isEmpty()) {
-		        	nomKitten[0] = rKitten.getText();
-		        	nomRobot[0] = rRobot.getText();
-		        	hasNames[0] = true;
-		        	
-		        	root.getChildren().remove(hb);
-		        	root.getChildren().remove(submit);
-		        }
-		     }
+		submit.setOnAction((event) -> {		//Contient le code entier: on a besoin des nom
+			if (rKitten.getText() != null && !rKitten.getText().isEmpty() &&
+	        		rRobot.getText() != null && !rKitten.getText().isEmpty()) {
+	        	nomKitten[0] = rKitten.getText();
+	        	nomRobot[0] = rRobot.getText();
+	        	
+	        	root.getChildren().remove(hb);
+	        	root.getChildren().remove(submit);
+	        	
+	        	Controller controller = new Controller(nomRobot[0], nomKitten[0]);
+				ArrayList<String[]> grille = controller.turn("bidon");
+	        	
+				message.setText(grille.get(0)[0]);
+	        	
+	        	
+	        }
 		});
-		
-		if(hasNames[0]) {
-			Controller controller = new Controller(nomRobot[0], nomKitten[0]);
-			ArrayList<String[]> grille = controller.turn("m");
-			message.setText("ABOUGOU"/*grille.get(0)[0]*/);
+				
 			
-			GridPane affichage = new GridPane();
+			
+			
+			/*GridPane affichage = new GridPane();
 			int y = 0;
 			for(int x=0; x<grille.get(2).length; x++) {
 				if(grille.get(2)[x].equals("NEXT")) {
@@ -114,6 +114,6 @@ public class GUI extends Application {
 				robotStatus.setText(grille.get(1)[0]);
 				winCondition = grille.get(3)[0];
 			} while(winCondition);*/
-		}
+		
 	}
 }
