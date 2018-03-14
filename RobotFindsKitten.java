@@ -1,75 +1,71 @@
 import java.util.ArrayList;
+
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
  
 public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 	private String message;
 	private Grille grille;
 	private Robot robot;
 	
-	public RobotFindsKitten (String robotName, String kittenName) {
-		this.grille = new Grille(5,2,11,5,25);
+	public RobotFindsKitten () {
+		this.grille = new Grille(3,2,7,5,25);
+	}
+	
+	public void generateRobKit (String robotName, String kittenName) {
 		this.robot = new Robot(robotName, this.grille.randomEmptyCell());
 		this.grille.generateKitten(kittenName);
 	}
-	
 	public boolean getTele() {
 		return this.robot.getTele();
 	}
 	
-	public ArrayList<String[]> turn(String tempMove) {
-		String okMoves = "wasd";
-		String[] affichage;
-		String[] message = {""};
-		String[] robotStatus = {""};
-		String[] winCondition = {"false"};
+	public Turn turn(String move) {
+		ArrayList<ArrayList<ImageView>> grid;
 		
-		if (robot.getTele()) okMoves = "wasdTt";
-		if (okMoves.indexOf(tempMove)==-1) {
-			affichage = this.grille.afficher(robot);
-			
-		} else {
-			String move = tempMove;	
-			Point tempPoint;
-			int futureX = robot.getX();
-			int futureY = robot.getY();
-			
-			switch (move) {
-			case "w":	futureY--;
-			        break;
-			case "a": 	futureX--;
-			        break;
-			case "s": 	futureY++;
-			        break;
-			case "d": 	futureX++;
-			        break;
-			case "T": 	tempPoint = grille.randomEmptyCell();
-						futureX = tempPoint.getX();
-						futureY = tempPoint.getY();
-			        break;
-			case "t": 	tempPoint = grille.randomEmptyCell();
-						futureX = tempPoint.getX();
-						futureY = tempPoint.getY();
-					break;
-			}
-			
-			if(grille.deplacementPossible(robot, futureX, futureY) == true) {
-				robot.setPos(futureX, futureY);
-			}
-			
-			message[0] = grille.interagir(robot);
-			String temp = "";
-			if(robot.getTele()) temp = "T";
-			robotStatus[0] = robot.getNom() + "[" + robot.getKey() + "]" + temp;
-			affichage = this.grille.afficher(robot);
-			winCondition[0] = ""+this.robot.getWinCondition();
+		boolean winCondition = false;
+
+		Point tempPoint;
+		int futureX = robot.getX();
+		int futureY = robot.getY();
+		
+		switch (move) {
+		case "w":	futureY--;
+		        break;
+		case "a": 	futureX--;
+		        break;
+		case "s": 	futureY++;
+		        break;
+		case "d": 	futureX++;
+		        break;
+		case "T": 	tempPoint = grille.randomEmptyCell();
+					futureX = tempPoint.getX();
+					futureY = tempPoint.getY();
+		        break;
+		case "t": 	tempPoint = grille.randomEmptyCell();
+					futureX = tempPoint.getX();
+					futureY = tempPoint.getY();
+				break;
+		case "NA":
+				break;
 		}
 		
-		ArrayList<String[]> messStatusAffi = new ArrayList<>();
-		messStatusAffi.add(message);
-		messStatusAffi.add(robotStatus);
-		messStatusAffi.add(affichage);
-		messStatusAffi.add(winCondition);
+		if(grille.deplacementPossible(robot, futureX, futureY) == true) {
+			robot.setPos(futureX, futureY);
+		}
 		
-		return messStatusAffi;
+		String message = grille.interagir(robot);
+		
+		String temp = "";
+		if(robot.getTele()) temp = "T";
+		String robotStatus = robot.getNom() + "[" + robot.getKey() + "]" + temp;
+		
+		grid = this.grille.afficher(robot);
+		winCondition = this.robot.getWinCondition();
+		
+		
+		String[] tempArray = {message, robotStatus};
+		return new Turn(grid, tempArray, winCondition);
 	}
 	
 	/*public static void main(String[] args) {

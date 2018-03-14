@@ -1,13 +1,31 @@
-import java.util.ArrayList;
-
 public class Controller {
 	private RobotFindsKitten rfk;
+	private boolean firstTurnDone;
 	
-	public Controller (String robotName, String kittenName) {
-		this.rfk = new RobotFindsKitten(robotName, kittenName);
+	public Controller () {
+		this.rfk = new RobotFindsKitten();
+		this.firstTurnDone = false;
 	}
 	
-	public ArrayList<String[]> turn(String move) {
-		return rfk.turn(move);
+	public Turn turn(String move) {
+		String nextMove = move;
+		String okMoves = "wasd";
+		if (rfk.getTele()) okMoves = "wasdTt";
+		if (okMoves.indexOf(move)==-1) {
+			nextMove = "NA";
+		} 
+		return rfk.turn(nextMove);
+	}
+	
+	public void thisIsFirstTurn() {
+		this.firstTurnDone = true;
+	}
+	
+	public boolean didFirstTurn() {
+		return this.firstTurnDone;
+	}
+	
+	public void generateRobKit(String robotName, String kittenName) {
+		this.rfk.generateRobKit(robotName, kittenName);
 	}
 }

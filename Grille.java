@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+
 public class Grille {
 	private Case[][] grille;
 	private int largeur;
@@ -168,29 +172,39 @@ public class Grille {
 	 * 
 	 * @param robot Le robot a placer dans le string
 	 */
-	public String[] afficher(Robot robot) {
-	    ArrayList<String> grid = new ArrayList<>();
+	public ArrayList<ArrayList<ImageView>> afficher(Robot robot) {
+		ArrayList<ArrayList<ImageView>> grid = new ArrayList<>();
+		ArrayList<ImageView> tempList = new ArrayList<>();
 	    int rX = robot.getX();
 	    int rY = robot.getY();
-	
+	    String temp = "";
+	    
 	    for(int y=0;y<hauteur;y++){
+	    	tempList = new ArrayList<>();
 			for(int x=0;x<largeur;x++){
 				
 				if (x == rX && y == rY) {
-					grid.add("rob.png");
+					temp = "rob.png";
 					
 				}else if (grille[x][y]==null) {
-					grid.add("back.png");
+					temp = "back.png";
 					
 				}else {
-					grid.add(grille[x][y].getRepresentation());
+					temp = grille[x][y].getRepresentation();
 				}
+				
+				Image tempImg = new Image("File:nki/" + temp);
+				ImageView tempImgView = new ImageView(tempImg);
+				tempImgView.setFitHeight(30);
+				tempImgView.setFitWidth(30);
+				
+				tempList.add(tempImgView);
 			}
 			
-			grid.add("NEXT");
+			grid.add(tempList);
 	    }
-	    grid.remove(grid.size()-1);
-	    return grid.toArray(new String[grid.size()]);
+	    
+	    return grid;
 	}
 	
 	/**
