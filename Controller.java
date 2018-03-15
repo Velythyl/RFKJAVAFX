@@ -8,13 +8,17 @@ public class Controller {
 	}
 	
 	public Turn turn(String move) {
-		String nextMove = move;
-		String okMoves = "wasd";
-		if (rfk.getTele()) okMoves = "wasdTt";
-		if (okMoves.indexOf(move)==-1) {
-			nextMove = "NA";
-		} 
-		return rfk.turn(nextMove);
+		if(move.equals("INIT")) {
+			return rfk.turn(move);
+		} else {
+			String nextMove = move;
+			String okMoves = "wasd";
+			if (rfk.getTele()) okMoves = "wasdTt";
+			if (okMoves.indexOf(move)==-1) {
+				nextMove = "NA";
+			} 
+			return rfk.turn(nextMove);
+		}
 	}
 	
 	public void thisIsFirstTurn() {

@@ -172,7 +172,7 @@ public class Grille {
 	 * 
 	 * @param robot Le robot a placer dans le string
 	 */
-	public ArrayList<ArrayList<ImageView>> afficher(Robot robot) {
+	public ArrayList<ArrayList<ImageView>> init(Robot robot) {
 		ArrayList<ArrayList<ImageView>> grid = new ArrayList<>();
 		ArrayList<ImageView> tempList = new ArrayList<>();
 	    int rX = robot.getX();
@@ -205,6 +205,22 @@ public class Grille {
 	    }
 	    
 	    return grid;
+	}
+	
+	public String[] getGrid(Robot robot, int formerX, int formerY) {
+		String robRep = "File:nki/rob.png";
+		String posRobX = "" + robot.getX();
+		String posRobY = "" + robot.getY();
+		
+		String oldRep;
+		if(grille[formerX][formerY] == null) {
+			oldRep = "File:nki/back.png";
+		} else oldRep = "File:nki/" + grille[formerX][formerY].getRepresentation();
+		String posOldX = "" + formerX;
+		String posOldY = "" + formerY;
+		
+		String[] temp = {robRep, posRobX, posRobY, oldRep, posOldX, posOldY};
+		return temp;
 	}
 	
 	/**

@@ -38,6 +38,6 @@ public abstract class Case {
 	* @return Un symbole ASCII valide
 	*/
 	public static String getRandomSymbole() {
-		return Math.floor((Math.random() * 82 + 1)) + ".png";
+		return ((int) Math.floor((Math.random() * 82 + 1))) + ".png";
 	}
 }

@@ -5,11 +5,13 @@ public class Turn {
 	private ArrayList<ArrayList<ImageView>> grid;
 	private String[] status;
 	private boolean winCondition;
+	private String[] nextRep;
 	
-	public Turn(ArrayList<ArrayList<ImageView>> grid, String[] status, boolean winCondition) {
+	public Turn(ArrayList<ArrayList<ImageView>> grid, String[] status, boolean winCondition, String[] nextRep) {
 		this.grid = grid;
 		this.status = status;
 		this.winCondition = winCondition;
+		this.nextRep = nextRep;
 	}
 	
 	public ArrayList<ArrayList<ImageView>> getGrid() {
@@ -22,5 +24,9 @@ public class Turn {
 	
 	public boolean getWinCondition() {
 		return winCondition;
+	}
+	
+	public String[] getNextRep() {
+		return nextRep;
 	}
 }

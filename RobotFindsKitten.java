@@ -21,13 +21,17 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 	}
 	
 	public Turn turn(String move) {
-		ArrayList<ArrayList<ImageView>> grid;
-		
+		String robotStatus;
+		String message;
 		boolean winCondition = false;
-
+		boolean firstTurn = false;
+		
 		Point tempPoint;
-		int futureX = robot.getX();
-		int futureY = robot.getY();
+		int formerX = robot.getX();
+		int formerY = robot.getY();
+		int futureX = formerX;
+		int futureY = formerY;
+		
 		
 		switch (move) {
 		case "w":	futureY--;
@@ -46,6 +50,8 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 					futureX = tempPoint.getX();
 					futureY = tempPoint.getY();
 				break;
+		case "INIT":	firstTurn = true;
+				break;
 		case "NA":
 				break;
 		}
@@ -54,18 +60,26 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 			robot.setPos(futureX, futureY);
 		}
 		
-		String message = grille.interagir(robot);
 		
-		String temp = "";
-		if(robot.getTele()) temp = "T";
-		String robotStatus = robot.getNom() + "[" + robot.getKey() + "]" + temp;
-		
-		grid = this.grille.afficher(robot);
-		winCondition = this.robot.getWinCondition();
-		
-		
-		String[] tempArray = {message, robotStatus};
-		return new Turn(grid, tempArray, winCondition);
+		if(move.equals("INIT")) {
+			message = "Retrouvons ton chaton!";
+			ArrayList<ArrayList<ImageView>> grid = this.grille.init(robot);
+			robotStatus = robot.getNom() + "[" + robot.getKey() + "]";
+			
+			String[] initTempArray = {message, robotStatus};
+			return new Turn(grid, initTempArray, false, null);
+		} else {
+			message = grille.interagir(robot);
+			String temp = "";
+			if(robot.getTele()) temp = "T";
+			robotStatus = robot.getNom() + "[" + robot.getKey() + "]" + temp;
+			String[] tempArray = {message, robotStatus};
+			
+			winCondition = this.robot.getWinCondition();
+			
+			String[] nextRep = this.grille.getGrid(robot, formerX, formerY);
+			return new Turn(null, tempArray, winCondition, nextRep);
+		}
 	}
 	
 	/*public static void main(String[] args) {

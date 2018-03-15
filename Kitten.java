@@ -35,6 +35,6 @@ public class Kitten extends Case {
 	
 	public String interagir(Robot robot) {
 		robot.foundKitten();
-		return "You found kitten! Way to go, robot.\n"+this.nom+" <3 "+robot.getNom();
+		return this.nom+" <3 "+robot.getNom();
 	}
 }
