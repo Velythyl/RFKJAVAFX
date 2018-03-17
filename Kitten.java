@@ -27,7 +27,7 @@ public class Kitten extends Case {
 	
 	/**
 	 * Fait l'interaction entre le robot et le kitten
-	 * On imprime le message de victoire (qui comprend le nom du kitten et du robot), 
+	 * On retourne le message de victoire (qui comprend le nom du kitten et du robot), 
 	 * et on dit au robot qu'il a trouve le kitten avec sa methode .foundKitten();
 	 * 
 	 * @param robot Le robot qui interagit avec le kitten

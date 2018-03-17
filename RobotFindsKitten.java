@@ -1,38 +1,83 @@
 import java.util.ArrayList;
 
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
  
 public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
-	private String message;
 	private Grille grille;
 	private Robot robot;
 	
+	/**
+	 * Cree la grille de jeu
+	 */
 	public RobotFindsKitten () {
-		this.grille = new Grille(3,2,7,5,25);
+		this.grille = new Grille(3,2,7,7,45);
 	}
 	
+	/**
+	 * Genere le robot et le kitten avec leurs noms
+	 * 
+	 * Kitten est dans la grille, le robot non
+	 * 
+	 * @param robotName le nom du robot
+	 * @param kittenName le nom du kitten
+	 */
 	public void generateRobKit (String robotName, String kittenName) {
 		this.robot = new Robot(robotName, this.grille.randomEmptyCell());
 		this.grille.generateKitten(kittenName);
 	}
+	
+	/**
+	 * Indique si le robot a le teleporteur
+	 * 
+	 * @return robot.getTele()
+	 */
 	public boolean getTele() {
 		return this.robot.getTele();
 	}
 	
+	/**
+	 * Fait un tour de partie
+	 * 
+	 * Si INIT, on on fait:
+	 * 		message = "Retrouvons ton chaton!"
+	 * 		robotStatus = nomRobot[0]
+	 * 		et on demande init a la grille
+	 * 
+	 * Sinon,
+	 * 		message = interaction robot-item
+	 * 		robotStatus (traitement normal) = 
+	 * 			"nomRobot[nbCles]getTele()"
+	 * 		et on demande getChanges a la grille
+	 * 
+	 * @param move traite par le controller
+	 * 
+	 * @return Turn cree par le tour
+	 */
 	public Turn turn(String move) {
 		String robotStatus;
 		String message;
 		boolean winCondition = false;
-		boolean firstTurn = false;
 		
+		/*
+		 * formerX/Y est la position du robot.
+		 * idem pour futureX/Y
+		 * tempPoint est utilise si on se teleporte
+		 */
 		Point tempPoint;
 		int formerX = robot.getX();
 		int formerY = robot.getY();
 		int futureX = formerX;
 		int futureY = formerY;
 		
-		
+		/*
+		 * logique du switch: on change le futureX ou Y de facon appropriee
+		 * selon wasd.
+		 * 
+		 * On change futureX et Y avec un randomEmptyCell si on se 
+		 * teleporte avec T ou t
+		 * 
+		 * Si on a INIT ou NA, on ne change pas le futureX ou Y
+		 */
 		switch (move) {
 		case "w":	futureY--;
 		        break;
@@ -50,74 +95,61 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 					futureX = tempPoint.getX();
 					futureY = tempPoint.getY();
 				break;
-		case "INIT":	firstTurn = true;
+		case "INIT":
 				break;
 		case "NA":
 				break;
 		}
 		
+		//Si futureX et Y sont valides, on change la position du robot
 		if(grille.deplacementPossible(robot, futureX, futureY) == true) {
 			robot.setPos(futureX, futureY);
 		}
 		
+		/*
+		 * Note sur Turn: il m'a ete utile de pouvoir a tout moment demander INIT
+		 * et de recevoir la grille complete. J'ai donc laisse le format 4 attributs
+		 * au lieu de 3 pour aider au debuggage.
+		 */
 		
+		/*
+		 * Si le movement est INIT:
+		 * traitement special de l'initialisation
+		 */
 		if(move.equals("INIT")) {
-			message = "Retrouvons ton chaton!";
-			ArrayList<ArrayList<ImageView>> grid = this.grille.init(robot);
-			robotStatus = robot.getNom() + "[" + robot.getKey() + "]";
+			message = "Retrouvons ton chaton!";	//Message toujours le meme
+			ArrayList<ArrayList<ImageView>> grid = this.grille.init(robot);	//On a besoin de tout
+																			//la grille
+			robotStatus = robot.getNom() + "[0]";	//impossible d'avoir une cle ou le tele
 			
+			/*
+			 * On retourne un Turn de type x, x, false, null
+			 * winCondition est toujours false en INIT
+			 */
 			String[] initTempArray = {message, robotStatus};
 			return new Turn(grid, initTempArray, false, null);
+	
+		//Pour tout autre mouvement
 		} else {
-			message = grille.interagir(robot);
+			message = grille.interagir(robot);	//message est l'interaction appropriee
+			
+			/*
+			 * Si pas le tele, robotStatus est nomRobot[nbClefs]
+			 * Sinon, robotStatus est nomRobot[nbClefs]T
+			 */
 			String temp = "";
 			if(robot.getTele()) temp = "T";
 			robotStatus = robot.getNom() + "[" + robot.getKey() + "]" + temp;
+			
 			String[] tempArray = {message, robotStatus};
 			
 			winCondition = this.robot.getWinCondition();
 			
-			String[] nextRep = this.grille.getGrid(robot, formerX, formerY);
+			/*
+			 * On retourne un Turn de type null, x, x, x
+			 */
+			String[] nextRep = this.grille.getChanges(robot, formerX, formerY);
 			return new Turn(null, tempArray, winCondition, nextRep);
 		}
-	}
-	
-	/*public static void main(String[] args) {
-		
-		System.out.println("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition !");
-		
-		System.out.println("Quel est ton nom, robot?:");
-		
-		System.out.println("Oh non! Tu as perdu ton chaton!?!\n"
-				+ "Quel est son nom???:");
-		
-		System.out.println("Retrouvons "+kittenName+"!");
-		
-		/*
-		 * Ce qui se trouve ci-haut cree la grille de jeu avec des noms
-		 * fournis par l'utilisateur pour le robot et le kitten.
-		 */
-		
-		/*
-		 * Tant qu'on a pas trouve le kitten, on demande le move a l'utilisateur.
-		 * Le move peut être wasd ou T (si le robot a le teleporteur)
-		 * 
-		 * De façon appropriee avec le move, on cree futureX et futureY, les futures
-		 * coordonnees du robot apres le move. Pour T, on fait ceci avec la methode
-		 * .randomEmptyCell(); de la grille.
-		 * 
-		 * Si le deplacement vers (futureX,futureY) est valide, on le fait.
-		 * 
-		 * Dans tout les cas, même si on ne bouge pas, le robot tente d'interagir
-		 * avec la case qu'il ecrase.
-		 * 
-		 * Les messages sont affiches en haut de la grille de façon a garder la grille
-		 * au même endroit. Ceci rend le jeu plus jouable. L'exception est rentrer un move
-		 * invalide: ceci est une "erreur" selon main (on ne peut rien faire avec z, par exemple)
-		 * 
-		 * Puis, on lance un nouveau tour tour.
-		 */
-		//String move = "";
-		
-    
+	}    
 }

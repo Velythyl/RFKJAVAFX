@@ -35,7 +35,7 @@ public abstract class Case {
 	/**
 	* Genere un symbole aleatoire
 	*
-	* @return Un symbole ASCII valide
+	* @return Une image valide
 	*/
 	public static String getRandomSymbole() {
 		return ((int) Math.floor((Math.random() * 82 + 1))) + ".png";

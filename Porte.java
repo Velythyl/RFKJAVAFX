@@ -4,7 +4,7 @@ public class Porte extends Case {
 	/**
 	 * Le constructeur des portes
 	 * Est construit a une position donnee en parametre
-	 * A toujours la representation !
+	 * A toujours la representation door.png
 	 * 
 	 * @param pos La position donnee a la porte
 	 */
@@ -16,8 +16,8 @@ public class Porte extends Case {
 	/**
 	 * Indique si l'interaction porte-robot est possible
 	 * Vrai si le robot a plus d'une cle et si la porte n'est pas
-	 * deja debarree (barree: representation = !, debarree:
-	 * representation = " ")
+	 * deja debarree (barree: representation = port.png, debarree:
+	 * representation = "back.png")
 	 * 
 	 * @param robot Le robot qui tente d'interagir avec la porte
 	 */
@@ -30,7 +30,7 @@ public class Porte extends Case {
 	
 	/**
 	 * Lorsque le robot interagit avec la porte, on la debarre en
-	 * changeant sa representation de ! a " "
+	 * changeant sa representation de porte.png a door.png
 	 * On decremente le nombre du cles du robot avec sa methode
 	 * .usedKey();
 	 * On imprime aussi un message apprenant a l'utilisateur qu'il

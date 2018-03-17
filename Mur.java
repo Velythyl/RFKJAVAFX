@@ -4,7 +4,7 @@ public class Mur extends Case {
 	/**
 	 * Le construceur des murs
 	 * Est construit a une position donnee en parametres
-	 * A toujours la representation %
+	 * A toujours la representation wall.png
 	 * 
 	 * @param pos La position donnee au mur
 	 */

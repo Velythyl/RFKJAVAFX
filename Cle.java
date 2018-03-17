@@ -3,7 +3,7 @@ public class Cle extends Case {
 	/**
 	 * Le constructeur des Cles
 	 * Prend comme position une pos passee en parametres
-	 * A toujours ' comme representation
+	 * A toujours key.png comme representation
 	 * 
 	 * @param pos La position a laquelle la Cle est construite
 	 */
@@ -14,7 +14,7 @@ public class Cle extends Case {
 	
 	/**
 	 * Indique si l'interaction cle-robot est possible
-	 * Vrai si la representation de la cle n'est pas " ", faux sinon
+	 * Vrai si la representation de la cle n'est pas "back.png", faux sinon
 	 * 
 	 * @param robot Le robot qui tente d'interagir avec la cle
 	 */
@@ -32,7 +32,7 @@ public class Cle extends Case {
 	 * qu'il a trouve une cle.
 	 * On dit a l'utilisateur qu'il a trouve une cle et combien
 	 * il en a
-	 * On change la representation de la cle a " "
+	 * On change la representation de la cle a "back.png"
 	 * 
 	 * @param robot Le robot qui interagit avec la cle
 	 */

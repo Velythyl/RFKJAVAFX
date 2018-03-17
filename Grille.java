@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 
 public class Grille {
 	private Case[][] grille;
@@ -207,7 +206,7 @@ public class Grille {
 	    return grid;
 	}
 	
-	public String[] getGrid(Robot robot, int formerX, int formerY) {
+	public String[] getChanges(Robot robot, int formerX, int formerY) {
 		String robRep = "File:nki/rob.png";
 		String posRobX = "" + robot.getX();
 		String posRobY = "" + robot.getY();

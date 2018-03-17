@@ -15,7 +15,7 @@ public class Teleporteur extends Case {
 	/**
 	 * Indique si l'interaction teleporteur-robot est possible
 	 * Vrai si le teleporteur n'a pas deja ete trouve (donc faux si
-	 * sa representation est " "
+	 * sa representation est back.png
 	 * 
 	 * @param robot Le robot qui tente d'interagir avec le teleporteur
 	 */
@@ -29,7 +29,7 @@ public class Teleporteur extends Case {
 	 * a l'utilisateur qu'il a trouve le teleporteur.
 	 * On indique au robot qu'il a trouve le teleporteur avec sa methode
 	 * .foundTele()
-	 * La representation du teleporteur devient " " pour indiquer qu'il a
+	 * La representation du teleporteur devient back.png pour indiquer qu'il a
 	 * ete trouve
 	 */
 	public String interagir(Robot robot) {
