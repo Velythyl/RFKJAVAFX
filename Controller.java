@@ -2,6 +2,7 @@ public class Controller {
 	private RobotFindsKitten rfk;
 	private boolean firstTurnDone;
 	private boolean isGameDone;
+	private boolean sound;
 	
 	/**
 	 * Au debut controller ne contient qu'un rfk sans robot ni kitten
@@ -12,6 +13,7 @@ public class Controller {
 		this.rfk = new RobotFindsKitten();
 		this.firstTurnDone = false;
 		this.isGameDone = false;
+		this.sound = true;
 	}
 	
 	/**
@@ -95,5 +97,13 @@ public class Controller {
 	 */
 	public boolean getIsGameDone() {
 		return this.isGameDone;
+	}
+	
+	public void toggleSound() {
+		this.sound = !this.sound;
+	}
+	
+	public boolean hasSound() {
+		return this.sound;
 	}
 }

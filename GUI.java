@@ -87,10 +87,28 @@ public class GUI extends Application {
 		hb.setAlignment(Pos.TOP_CENTER);
 		hb.setTranslateY(20);
 		hb.getChildren().addAll(qRobot, rRobot, qKitten, rKitten);
+		root.getChildren().add(hb);
 		
 		Button submit = new Button("Envoyer");
 		submit.setTranslateY(40);
-		root.getChildren().addAll(hb, submit);
+		
+		/*
+		 * Boutons pour le son et les images DLC
+		 */
+		HBox hbBonus = new HBox(10);
+		hbBonus.setTranslateY(40);
+		hbBonus.setAlignment(Pos.TOP_CENTER);
+		
+		Button son = new Button("Toggle son");
+		
+		hbBonus.getChildren().addAll(son/*, newDLC*/);
+		
+		VBox buttonBox = new VBox(20);
+		buttonBox.setStyle("-fx-background: #000000;");	//background noir,
+		buttonBox.setAlignment(Pos.TOP_CENTER);			//alignement centre
+		buttonBox.getChildren().addAll(submit, hbBonus);
+		
+		root.getChildren().addAll(buttonBox);
 		
 		//AFFICHAGE ET MESSAGE EN BAS DE PAGE
 		GridPane affichage = new GridPane();
@@ -148,8 +166,19 @@ public class GUI extends Application {
 	    
 		stage.show();
 
+		son.setOnAction((event) -> {
+			controller.toggleSound();
+			if(controller.hasSound()) {
+				gameLoop.setVolume(0.2);
+				victoryLoop.setVolume(1.0);
+			} else {
+				gameLoop.setVolume(0.0);
+				victoryLoop.setVolume(0.0);
+			}
+		});
+		
 		/*
-		 * Lorsqu'on clique sur le bouton, on entre nos reponses pour le nom
+		 * Lorsqu'on clique sur le bouton submit, on entre nos reponses pour le nom
 		 * du robot et du kitten
 		 */
 		submit.setOnAction((event) -> {
@@ -172,8 +201,7 @@ public class GUI extends Application {
 				 */
 	        	controller.generateRobKit(rRobot.getText(), rKitten.getText());
 	        	
-	        	root.getChildren().remove(hb);
-	        	root.getChildren().remove(submit);
+	        	root.getChildren().removeAll(hb, buttonBox);
 	    		
 	        	/*
 	        	 * On fait un tour d'initiation qui retourne la grille entiere.
@@ -240,8 +268,7 @@ public class GUI extends Application {
 					message.getText().equals("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition!")) {
 				controller.generateRobKit(rRobot.getText(), rKitten.getText());
 	        	
-	        	root.getChildren().remove(hb);
-	        	root.getChildren().remove(submit);
+	        	root.getChildren().removeAll(hb, buttonBox);
 	    		
 	    		Turn firstTurn = controller.turn("INIT");
 	    		ArrayList<ArrayList<ImageView>> firstGrid = firstTurn.getGrid();
@@ -280,7 +307,7 @@ public class GUI extends Application {
 				victoryLoop.pause();
 				gameLoop.play();
 				
-				root.getChildren().addAll(message, hb, submit, affichage, robotStatus);
+				root.getChildren().addAll(message, hb, buttonBox, affichage, robotStatus);
 				
 				controller.newGame(); //Genere une nouvelle grille sans robot ni kitten
 				
@@ -300,9 +327,12 @@ public class GUI extends Application {
 				/*
 				 * Qu'on gagne ou non, on a besoin de faire jouer un son pris du tour
 				 */
-				Media sound = new Media(new File("nki/sounds/"+otherTurns.getSound()).toURI().toString());
-				MediaPlayer soundPlayer = new MediaPlayer(sound);
-				soundPlayer.play();
+				if(controller.hasSound()) {
+					Media sound = new Media(new File("nki/sounds/"+otherTurns.getSound()).toURI().toString());
+					MediaPlayer soundPlayer = new MediaPlayer(sound);
+					if(otherTurns.getWinCondition()) soundPlayer.setVolume(0.3);
+					soundPlayer.play();
+				}
 				
 				/*
 				 * Si on a gagne la partie, on le dit au controlleur,
