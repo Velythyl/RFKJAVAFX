@@ -1,0 +1,25 @@
+Nouvelle logique du jeu: RobotFindsKitten a la grille et le robot.
+Le controlleur a le RobotFindsKitten, et le GUI a le controlleur. Lors de
+l'initialisation du jeu, on demande un tour INIT a controlleur, qui le demande
+au RobotFindsKitten. On retourne les bons messages et la grille entière.
+
+Lors des autres tours, on retourne les bons messages, le winCondition, les
+changements d'apparence de la grille à deux coordonnées et le son a jouer (voir
+    bonus 1).
+
+J'ai décidé de faire le bonus 1.
+
+Pour le 1, j'ai créé une loop musicale joue lors du déroulement normal du jeu,
+et une loop qui joue lors de la victoire.
+
+Normalement, la musique de jeu joue jusqu'à la fin de l'enregistrement. Avec un
+event sur sa fin, je la repars avec seek (Duration.0).
+Lorsqu'on gagne, la loop du jeu est mise sur pause et celle de victoire est mise
+sur play(). Elle utilise le même principe d'event.
+
+De plus, lorsque le robot passe sur une case, on joue un son approprié. J'ai
+modifié la méthode interagir: elle retourne maintenant un String[] de forme
+{String d'interaction, son}. Dans RobotFindsKitten, on traite les choses
+nécéssaires à un Turn (grille, tableau de textes, winCondition, tableau de
+    string de forme repRobot:x:y:repAutre:x:y, son) et on retourne le Turn au
+controlleur puis au GUI. Le GUI demande le son au Turn et le fait jouer.
