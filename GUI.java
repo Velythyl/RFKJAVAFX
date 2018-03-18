@@ -1,7 +1,7 @@
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.application.Application;
-import javafx.application.Platform; 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,11 +16,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GUI extends Application {
 	
@@ -61,12 +64,15 @@ public class GUI extends Application {
 		 * kitten.
 		 * 
 		 */
+		
+		//MESSAGE EN HAUT
 		Text message = new Text("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition!");
 		message.setFont(Font.font ("Verdana", 25));
 		message.setFill(Color.WHITE);
 		message.setTextAlignment(TextAlignment.CENTER);
 		root.getChildren().add(message);
 		
+		//QUESTIONS
 		Label qRobot = new Label("Quel est ton nom, robot?");
 		qRobot.setPadding(new Insets(0, 10, 0, 0));
 		qRobot.setFont(Font.font ("Verdana", 20));
@@ -86,6 +92,7 @@ public class GUI extends Application {
 		submit.setTranslateY(40);
 		root.getChildren().addAll(hb, submit);
 		
+		//AFFICHAGE ET MESSAGE EN BAS DE PAGE
 		GridPane affichage = new GridPane();
 		affichage.setAlignment(Pos.TOP_CENTER);
 		root.getChildren().add(affichage);
@@ -98,6 +105,7 @@ public class GUI extends Application {
 		robotStatus.setTextAlignment(TextAlignment.CENTER);
 		root.getChildren().add(robotStatus);
 		
+		//ELEMENTS DE VICTOIRE
 		Image vicImg = new Image("File:nki/found-kitten.png");
 		ImageView vicImgView = new ImageView(vicImg);
 		vicImgView.setFitHeight(720);
@@ -118,6 +126,25 @@ public class GUI extends Application {
 		pane.getChildren().add(vicImgView);
 	    pane.getChildren().add(victoire1);
 	    pane.getChildren().add(victoire2);
+	    
+	    /*
+	     * Logique pour la musique: on loop une musique de jeu pour la partie entiere.
+	     * Si on interagit avec un objet approprie, on fait jouer son son.
+	     * 
+	     * Si on gagne la partie, le loop est remplace par une musique de victoire
+	     * 
+	     * Jeu: https://www.dl-sounds.com/royalty-free/patakas-world/
+	     * Victoire: https://www.dl-sounds.com/royalty-free/tbone-and-friends/
+	     * Sons: https://freesound.org/ , specifies dans chaque classe
+	     */
+	    Media gameLoopMedia = new Media(new File("nki/sounds/gameLoop.wav").toURI().toString());
+	    MediaPlayer gameLoop = new MediaPlayer(gameLoopMedia);
+	    gameLoop.setVolume(0.2);
+	    gameLoop.play();
+
+	    Media victoryLoopMedia = new Media(new File("nki/sounds/victoryLoop.wav").toURI().toString());
+	    MediaPlayer victoryLoop = new MediaPlayer(victoryLoopMedia);
+	    victoryLoop.setVolume(0.75);
 	    
 		stage.show();
 
@@ -170,6 +197,23 @@ public class GUI extends Application {
 	    		
 	    		controller.thisIsFirstTurn(); //Tour d'init fait
 	        }
+		});
+		
+		/*
+		 * Events de sons: on veut looper si le media se termine
+		 * 
+		 * https://stackoverflow.com/questions/23498376/ahow-to-make-a-mp3-repeat-in-javafx
+		 */
+		gameLoop.setOnEndOfMedia(new Runnable() {
+			public void run() {
+				gameLoop.seek(Duration.ZERO);
+			}
+		});
+		
+		victoryLoop.setOnEndOfMedia(new Runnable() {
+			public void run() {
+				victoryLoop.seek(Duration.ZERO);
+			}
 		});
 		
 		/*
@@ -233,6 +277,8 @@ public class GUI extends Application {
 				message.setText("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition!");
 				robotStatus.setText("");
 				affichage.getChildren().clear();
+				victoryLoop.pause();
+				gameLoop.play();
 				
 				root.getChildren().addAll(message, hb, submit, affichage, robotStatus);
 				
@@ -250,7 +296,14 @@ public class GUI extends Application {
 				 */
 				Turn otherTurns = controller.turn(event.getText());
 				String[] otherStatus = otherTurns.getStatus();
-	    		
+				
+				/*
+				 * Qu'on gagne ou non, on a besoin de faire jouer un son pris du tour
+				 */
+				Media sound = new Media(new File("nki/sounds/"+otherTurns.getSound()).toURI().toString());
+				MediaPlayer soundPlayer = new MediaPlayer(sound);
+				soundPlayer.play();
+				
 				/*
 				 * Si on a gagne la partie, on le dit au controlleur,
 				 * on enleve les elements graphiques de la partie,
@@ -266,6 +319,10 @@ public class GUI extends Application {
 	    			
 	    			victoire2.setText(otherStatus[0]);
 					
+	    			//Changement de loop de musique
+	    			gameLoop.pause();
+	    			victoryLoop.play();
+	    			
 				    root.getChildren().add(pane);
 				
 				//Sinon, on traite un tour normal

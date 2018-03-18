@@ -230,12 +230,17 @@ public class Grille {
 	 * 		On saute une ligne
 	 * @param robot
 	 */
-	public String interagir(Robot robot) {
+	public String[] interagir(Robot robot) {
 		int rX = robot.getX();
 		int rY = robot.getY();
 		
-		if (grille[rX][rY] != null && grille[rX][rY].interactionPossible(robot)) {
-			return grille[rX][rY].interagir(robot);
-		}else return "";
+		Case cetteCase = grille[rX][rY];
+		
+		if (cetteCase != null && cetteCase.interactionPossible(robot)) {
+			return cetteCase.interagir(robot);
+		}else {
+			String[] temp = {"","footstep.wav"};
+			return temp;
+		}
 	}
 }

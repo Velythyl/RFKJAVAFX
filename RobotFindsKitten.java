@@ -127,12 +127,13 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 			 * winCondition est toujours false en INIT
 			 */
 			String[] initTempArray = {message, robotStatus};
-			return new Turn(grid, initTempArray, false, null);
+			return new Turn(grid, initTempArray, false, null, null);
 	
 		//Pour tout autre mouvement
 		} else {
-			message = grille.interagir(robot);	//message est l'interaction appropriee
-			
+			String[] repSound = grille.interagir(robot);
+			message = repSound[0]; //message est l'interaction appropriee
+			String sound = repSound[1];
 			/*
 			 * Si pas le tele, robotStatus est nomRobot[nbClefs]
 			 * Sinon, robotStatus est nomRobot[nbClefs]T
@@ -149,7 +150,7 @@ public class RobotFindsKitten {	//Ceci est la classe regroupant les modeles
 			 * On retourne un Turn de type null, x, x, x
 			 */
 			String[] nextRep = this.grille.getChanges(robot, formerX, formerY);
-			return new Turn(null, tempArray, winCondition, nextRep);
+			return new Turn(null, tempArray, winCondition, nextRep, sound);
 		}
 	}    
 }
