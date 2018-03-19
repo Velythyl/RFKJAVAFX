@@ -1,7 +1,17 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 public class Controller {
 	private RobotFindsKitten rfk;
 	private boolean firstTurnDone;
 	private boolean isGameDone;
+	private boolean sound;
 	
 	/**
 	 * Au debut controller ne contient qu'un rfk sans robot ni kitten
@@ -12,6 +22,7 @@ public class Controller {
 		this.rfk = new RobotFindsKitten();
 		this.firstTurnDone = false;
 		this.isGameDone = false;
+		this.sound = true;
 	}
 	
 	/**
@@ -96,4 +107,78 @@ public class Controller {
 	public boolean getIsGameDone() {
 		return this.isGameDone;
 	}
+	
+	/**
+	 * Met le son on/off
+	 */
+	public void toggleSound() {
+		this.sound = !this.sound;
+	}
+	
+	/**
+	 * Indique la valeur de verite d'activation du son
+	 * 
+	 * @return boolean sound
+	 */
+	public boolean hasSound() {
+		return this.sound;
+	}
+	
+	/**
+	 * Downloads 82 nouvelle images a utiliser dans le jeu
+	 * 
+	 * On utilise un script JS puisque le bouton "random icon"
+	 * du site game-icons.net utilise un event: il n'y a pas de
+	 * lien vers un "game-icons.net/random". On fait donc rouler
+	 * leur script a l'interieur de l'engine de scriptage nashorn.
+	 * 
+	 * http://winterbe.com/posts/2014/04/05/java8-nashorn-tutorial/
+	 * 
+	 * Ceci vient de base depuis JDK8.
+	 * 
+	 * Ceci fait aussi en sorte qu'on a pas besoin de traiter le json
+	 * nous meme en java
+	 */
+	//public String getDLC() {
+		
+		
+		
+		/*
+		ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+		
+		int infLoopBreaker1 = 0;
+		while(true) {
+			try {
+				engine.eval(new FileReader("dlc.js"));
+				
+				Invocable invocable = (Invocable) engine;
+				ArrayList<String> result = new ArrayList<>();
+				
+				for(int counter=0; counter<82; counter++) {
+					
+					int infLoopBreaker2 = 0;
+					while(true) {
+						try {
+							Object objResult = invocable.invokeFunction("func");
+							result.add(objResult.toString());
+							break;
+						
+						//Si 3 essais sans succes, abandonne
+						} catch (NoSuchMethodException e) {
+							infLoopBreaker2++;
+							e.printStackTrace();
+							if(infLoopBreaker2 == 2) break;
+						}
+					};
+						
+				}
+			} catch (FileNotFoundException | ScriptException e) {
+				infLoopBreaker1++;
+				e.printStackTrace();
+				if(infLoopBreaker1 == 2) {
+					return "Erreur de connecton a internet";
+				}
+			}
+		}*/
+	//}
 }
