@@ -2,10 +2,11 @@ import javafx.scene.image.ImageView;
 import java.util.ArrayList;
 
 public class Turn {
-	private ArrayList<ArrayList<ImageView>> grid;
+	private ArrayList<ArrayList<String>> grid;
 	private String[] status;
 	private boolean winCondition;
 	private String[] nextRep;
+	private String sound;
 	
 	/**
 	 * Un Turn est un bundle d'informations utiles pour un tour.
@@ -17,11 +18,13 @@ public class Turn {
 	 * @param winCondition un boolean disant si on a gagne ou pas
 	 * @param nextRep un tableau de string de representation future 
 	 */
-	public Turn(ArrayList<ArrayList<ImageView>> grid, String[] status, boolean winCondition, String[] nextRep) {
+	public Turn(ArrayList<ArrayList<String>> grid, String[] status, 
+			boolean winCondition, String[] nextRep, String sound) {
 		this.grid = grid;
 		this.status = status;
 		this.winCondition = winCondition;
 		this.nextRep = nextRep;
+		this.sound = sound;
 	}
 	
 	/**
@@ -29,7 +32,7 @@ public class Turn {
 	 * 
 	 * @return grid
 	 */
-	public ArrayList<ArrayList<ImageView>> getGrid() {
+	public ArrayList<ArrayList<String>> getGrid() {
 		return grid;
 	}
 	
@@ -58,5 +61,9 @@ public class Turn {
 	 */
 	public String[] getNextRep() {
 		return nextRep;
+	}
+	
+	public String getSound() {
+		return sound;
 	}
 }

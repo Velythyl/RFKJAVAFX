@@ -2,6 +2,8 @@
 public abstract class Case {
 	protected String representation;
 	protected Point pos;
+	protected String sound;	//Sauf exceptions, 
+							//footstep: https://freesound.org/people/swuing/sounds/38873/
 	
 	/**
 	* Retourne la representation de la case (un seul caractere)
@@ -30,7 +32,7 @@ public abstract class Case {
 	*
 	* @param robot
 	*/
-	public abstract String interagir(Robot robot);
+	public abstract String[] interagir(Robot robot);
 	
 	/**
 	* Genere un symbole aleatoire

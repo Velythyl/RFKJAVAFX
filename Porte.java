@@ -1,5 +1,6 @@
  
 public class Porte extends Case {
+	private boolean unlocked;
 	
 	/**
 	 * Le constructeur des portes
@@ -11,6 +12,8 @@ public class Porte extends Case {
 	public Porte(Point pos) {
 		this.pos =  pos;
 		this.representation = "door.png";
+		this.sound = "unlockDoor.wav";	
+		this.unlocked = false;
 	}
 	
 	/**
@@ -22,7 +25,7 @@ public class Porte extends Case {
 	 * @param robot Le robot qui tente d'interagir avec la porte
 	 */
 	public boolean interactionPossible(Robot robot) {
-		if (robot.getKey()>=1 && this.representation != "back.png") {
+		if (robot.getKey()>=1 && this.unlocked == false) {
 			return true;
 		}
 		return false;
@@ -38,9 +41,20 @@ public class Porte extends Case {
 	 * 
 	 * @param robot Le robot qui interagit avec le NonKitten
 	 */
-	public String interagir(Robot robot) {
+	public String[] interagir(Robot robot) {
 		robot.usedKey();
 		this.representation = "back.png";
-		return "Vous avez utilise la cle pour debarrer la porte. Vous avez "+robot.getKey()+" cles";
+		
+		String soundSorter = "";
+		if(unlocked == false) {
+			unlocked = true;
+			soundSorter = sound;
+			this.sound = "footstep.wav";
+		} else soundSorter = this.sound;
+		
+		String[] temp = {"Vous avez utilise la cle pour debarrer la porte. Vous avez "+robot.getKey()+" cles",
+				soundSorter};
+		
+		return temp;
 	}
 }

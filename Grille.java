@@ -171,9 +171,9 @@ public class Grille {
 	 * 
 	 * @param robot Le robot a placer dans le string
 	 */
-	public ArrayList<ArrayList<ImageView>> init(Robot robot) {
-		ArrayList<ArrayList<ImageView>> grid = new ArrayList<>();
-		ArrayList<ImageView> tempList = new ArrayList<>();
+	public ArrayList<ArrayList<String>> init(Robot robot) {
+		ArrayList<ArrayList<String>> grid = new ArrayList<>();
+		ArrayList<String> tempList = new ArrayList<>();
 	    int rX = robot.getX();
 	    int rY = robot.getY();
 	    String temp = "";
@@ -192,12 +192,9 @@ public class Grille {
 					temp = grille[x][y].getRepresentation();
 				}
 				
-				Image tempImg = new Image("File:nki/" + temp);
-				ImageView tempImgView = new ImageView(tempImg);
-				tempImgView.setFitHeight(30);
-				tempImgView.setFitWidth(30);
 				
-				tempList.add(tempImgView);
+				
+				tempList.add(temp);
 			}
 			
 			grid.add(tempList);
@@ -230,12 +227,17 @@ public class Grille {
 	 * 		On saute une ligne
 	 * @param robot
 	 */
-	public String interagir(Robot robot) {
+	public String[] interagir(Robot robot) {
 		int rX = robot.getX();
 		int rY = robot.getY();
 		
-		if (grille[rX][rY] != null && grille[rX][rY].interactionPossible(robot)) {
-			return grille[rX][rY].interagir(robot);
-		}else return "";
+		Case cetteCase = grille[rX][rY];
+		
+		if (cetteCase != null && cetteCase.interactionPossible(robot)) {
+			return cetteCase.interagir(robot);
+		}else {
+			String[] temp = {"","footstep.wav"};
+			return temp;
+		}
 	}
 }

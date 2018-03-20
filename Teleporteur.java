@@ -10,6 +10,7 @@ public class Teleporteur extends Case {
 	public Teleporteur (Point pos) {
 		this.pos = pos;
 		this.representation = getRandomSymbole();
+		this.sound = "teleporteur.wav";	//https://freesound.org/people/GameAudio/sounds/220173/
 	}
 	
 	/**
@@ -32,9 +33,13 @@ public class Teleporteur extends Case {
 	 * La representation du teleporteur devient back.png pour indiquer qu'il a
 	 * ete trouve
 	 */
-	public String interagir(Robot robot) {
+	public String[] interagir(Robot robot) {
 		robot.foundTele();
+		String soundSorter = sound;
+		this.sound = "footstep.wav";
 		this.representation = "back.png";
-		return "Vous avez trouve le teleporteur!";
+		
+		String[] temp = {"Vous avez trouve le teleporteur!", soundSorter};
+		return temp;
 	}
 }

@@ -1,7 +1,7 @@
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.application.Application;
-import javafx.application.Platform; 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,11 +16,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GUI extends Application {
 	
@@ -61,12 +64,15 @@ public class GUI extends Application {
 		 * kitten.
 		 * 
 		 */
+		
+		//MESSAGE EN HAUT
 		Text message = new Text("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition!");
 		message.setFont(Font.font ("Verdana", 25));
 		message.setFill(Color.WHITE);
 		message.setTextAlignment(TextAlignment.CENTER);
 		root.getChildren().add(message);
 		
+		//QUESTIONS
 		Label qRobot = new Label("Quel est ton nom, robot?");
 		qRobot.setPadding(new Insets(0, 10, 0, 0));
 		qRobot.setFont(Font.font ("Verdana", 20));
@@ -81,11 +87,33 @@ public class GUI extends Application {
 		hb.setAlignment(Pos.TOP_CENTER);
 		hb.setTranslateY(20);
 		hb.getChildren().addAll(qRobot, rRobot, qKitten, rKitten);
+		root.getChildren().add(hb);
 		
 		Button submit = new Button("Envoyer");
 		submit.setTranslateY(40);
-		root.getChildren().addAll(hb, submit);
 		
+		/*
+		 * Boutons pour le son et les images DLC
+		 */
+		VBox vbBonus = new VBox(20);
+		vbBonus.setTranslateY(40);
+		vbBonus.setAlignment(Pos.TOP_CENTER);
+		
+		Button son = new Button("Toggle son");
+		
+		Button dlc = new Button("Aller chercher des DLC");
+		Label lDLC = new Label("");
+		
+		vbBonus.getChildren().addAll(son, dlc, lDLC);
+		
+		VBox buttonBox = new VBox(20);
+		buttonBox.setStyle("-fx-background: #000000;");	//background noir,
+		buttonBox.setAlignment(Pos.TOP_CENTER);			//alignement centre
+		buttonBox.getChildren().addAll(submit, vbBonus);
+		
+		root.getChildren().addAll(buttonBox);
+		
+		//AFFICHAGE ET MESSAGE EN BAS DE PAGE
 		GridPane affichage = new GridPane();
 		affichage.setAlignment(Pos.TOP_CENTER);
 		root.getChildren().add(affichage);
@@ -98,6 +126,7 @@ public class GUI extends Application {
 		robotStatus.setTextAlignment(TextAlignment.CENTER);
 		root.getChildren().add(robotStatus);
 		
+		//ELEMENTS DE VICTOIRE
 		Image vicImg = new Image("File:nki/found-kitten.png");
 		ImageView vicImgView = new ImageView(vicImg);
 		vicImgView.setFitHeight(720);
@@ -119,10 +148,54 @@ public class GUI extends Application {
 	    pane.getChildren().add(victoire1);
 	    pane.getChildren().add(victoire2);
 	    
+	    /*
+	     * Logique pour la musique: on loop une musique de jeu pour la partie entiere.
+	     * Si on interagit avec un objet approprie, on fait jouer son son.
+	     * 
+	     * Si on gagne la partie, le loop est remplace par une musique de victoire
+	     * 
+	     * Jeu: https://www.dl-sounds.com/royalty-free/patakas-world/
+	     * Victoire: https://www.dl-sounds.com/royalty-free/tbone-and-friends/
+	     * Sons: https://freesound.org/ , specifies dans chaque classe
+	     */
+	    Media gameLoopMedia = new Media(new File("nki/sounds/gameLoop.wav").toURI().toString());
+	    MediaPlayer gameLoop = new MediaPlayer(gameLoopMedia);
+	    gameLoop.setVolume(0.2);
+	    gameLoop.play();
+
+	    Media victoryLoopMedia = new Media(new File("nki/sounds/victoryLoop.wav").toURI().toString());
+	    MediaPlayer victoryLoop = new MediaPlayer(victoryLoopMedia);
+	    victoryLoop.setVolume(0.75);
+	    
 		stage.show();
 
+		son.setOnAction((event) -> {
+			controller.toggleSound();
+			if(controller.hasSound()) {
+				gameLoop.setVolume(0.2);
+				victoryLoop.setVolume(1.0);
+			} else {
+				gameLoop.setVolume(0.0);
+				victoryLoop.setVolume(0.0);
+			}
+		});
+		
+		dlc.setOnAction((event) -> {
+			String[] nextStep = controller.getDLC();
+			lDLC.setText(nextStep[0]);
+			if(nextStep[1].equals("false")) {
+				nextStep = controller.resizeAndColorDLC();
+				lDLC.setText(nextStep[0]);
+				
+				if(nextStep[1].equals("false")) {
+					nextStep = controller.parseDLC();
+					lDLC.setText(nextStep[0]);
+				}
+			}
+		});
+		
 		/*
-		 * Lorsqu'on clique sur le bouton, on entre nos reponses pour le nom
+		 * Lorsqu'on clique sur le bouton submit, on entre nos reponses pour le nom
 		 * du robot et du kitten
 		 */
 		submit.setOnAction((event) -> {
@@ -145,19 +218,23 @@ public class GUI extends Application {
 				 */
 	        	controller.generateRobKit(rRobot.getText(), rKitten.getText());
 	        	
-	        	root.getChildren().remove(hb);
-	        	root.getChildren().remove(submit);
+	        	root.getChildren().removeAll(hb, buttonBox);
 	    		
 	        	/*
 	        	 * On fait un tour d'initiation qui retourne la grille entiere.
 	        	 * On rempli le gridpane avec cela.
 	        	 */
 	    		Turn firstTurn = controller.turn("INIT");
-	    		ArrayList<ArrayList<ImageView>> firstGrid = firstTurn.getGrid();
+	    		ArrayList<ArrayList<String>> firstGrid = firstTurn.getGrid();
 	    		
 	    		for(int y=0; y<firstGrid.size(); y++) {
 	    			for(int x=0; x<firstGrid.get(0).size(); x++) {
-	    				affichage.add(firstGrid.get(y).get(x), x, y);
+	    				Image tempImg = new Image("nki/" + firstGrid.get(y).get(x));
+	    				ImageView tempImgView = new ImageView(tempImg);
+	    				tempImgView.setFitHeight(30);
+	    				tempImgView.setFitWidth(30);
+	    				
+	    				affichage.add(tempImgView, x, y);
 	    			}
 	    		}
 	    		
@@ -170,6 +247,23 @@ public class GUI extends Application {
 	    		
 	    		controller.thisIsFirstTurn(); //Tour d'init fait
 	        }
+		});
+		
+		/*
+		 * Events de sons: on veut looper si le media se termine
+		 * 
+		 * https://stackoverflow.com/questions/23498376/ahow-to-make-a-mp3-repeat-in-javafx
+		 */
+		gameLoop.setOnEndOfMedia(new Runnable() {
+			public void run() {
+				gameLoop.seek(Duration.ZERO);
+			}
+		});
+		
+		victoryLoop.setOnEndOfMedia(new Runnable() {
+			public void run() {
+				victoryLoop.seek(Duration.ZERO);
+			}
 		});
 		
 		/*
@@ -196,15 +290,19 @@ public class GUI extends Application {
 					message.getText().equals("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition!")) {
 				controller.generateRobKit(rRobot.getText(), rKitten.getText());
 	        	
-	        	root.getChildren().remove(hb);
-	        	root.getChildren().remove(submit);
+	        	root.getChildren().removeAll(hb, buttonBox);
 	    		
 	    		Turn firstTurn = controller.turn("INIT");
-	    		ArrayList<ArrayList<ImageView>> firstGrid = firstTurn.getGrid();
+	    		ArrayList<ArrayList<String>> firstGrid = firstTurn.getGrid();
 	    		
 	    		for(int y=0; y<firstGrid.size(); y++) {
 	    			for(int x=0; x<firstGrid.get(0).size(); x++) {
-	    				affichage.add(firstGrid.get(y).get(x), x, y);
+	    				Image tempImg = new Image("nki/" + firstGrid.get(y).get(x));
+	    				ImageView tempImgView = new ImageView(tempImg);
+	    				tempImgView.setFitHeight(30);
+	    				tempImgView.setFitWidth(30);
+	    				
+	    				affichage.add(tempImgView, x, y);
 	    			}
 	    		}
 	    		
@@ -233,8 +331,10 @@ public class GUI extends Application {
 				message.setText("Bienvenue dans RobotFindsKitten: Super Dungeon Master 3000 Ultra Turbo Edition!");
 				robotStatus.setText("");
 				affichage.getChildren().clear();
+				victoryLoop.pause();
+				gameLoop.play();
 				
-				root.getChildren().addAll(message, hb, submit, affichage, robotStatus);
+				root.getChildren().addAll(message, hb, buttonBox, affichage, robotStatus);
 				
 				controller.newGame(); //Genere une nouvelle grille sans robot ni kitten
 				
@@ -250,7 +350,17 @@ public class GUI extends Application {
 				 */
 				Turn otherTurns = controller.turn(event.getText());
 				String[] otherStatus = otherTurns.getStatus();
-	    		
+				
+				/*
+				 * Qu'on gagne ou non, on a besoin de faire jouer un son pris du tour
+				 */
+				if(controller.hasSound()) {
+					Media sound = new Media(new File("nki/sounds/"+otherTurns.getSound()).toURI().toString());
+					MediaPlayer soundPlayer = new MediaPlayer(sound);
+					if(otherTurns.getWinCondition()) soundPlayer.setVolume(0.3);
+					soundPlayer.play();
+				}
+				
 				/*
 				 * Si on a gagne la partie, on le dit au controlleur,
 				 * on enleve les elements graphiques de la partie,
@@ -266,6 +376,10 @@ public class GUI extends Application {
 	    			
 	    			victoire2.setText(otherStatus[0]);
 					
+	    			//Changement de loop de musique
+	    			gameLoop.pause();
+	    			victoryLoop.play();
+	    			
 				    root.getChildren().add(pane);
 				
 				//Sinon, on traite un tour normal
