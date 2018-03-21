@@ -103,8 +103,9 @@ public class GUI extends Application {
 		
 		Button dlc = new Button("Aller chercher des DLC");
 		Label lDLC = new Label("");
+		Label wDLC = new Label("");
 		
-		vbBonus.getChildren().addAll(son, dlc, lDLC);
+		vbBonus.getChildren().addAll(son, dlc, wDLC, lDLC);
 		
 		VBox buttonBox = new VBox(20);
 		buttonBox.setStyle("-fx-background: #000000;");	//background noir,

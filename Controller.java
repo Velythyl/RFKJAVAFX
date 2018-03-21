@@ -1,14 +1,16 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,9 +21,17 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.paint.Color;
 
 public class Controller {
 	private RobotFindsKitten rfk;
@@ -146,47 +156,67 @@ public class Controller {
         }
 		
 		if(reachable) {
-        	ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
         	
-        	try {
-				engine.eval(new FileReader("nki/dlc.js"));
-			} catch (FileNotFoundException | ScriptException e1) {
-				status[0] = "Erreur: js script introuvable";
-				e1.printStackTrace();
-				return status;
-			}
-			
-			Invocable invocable = (Invocable) engine;
-			String[] urlArray;
+			URL url;
+			URLConnection con;
 			try {
-				urlArray = (String[]) invocable.invokeFunction("func");
-			} catch (NoSuchMethodException | ScriptException e1) {
-				status[0] = "Erreur: js script incomplet";
-				e1.printStackTrace();
+				url = new URL("http://game-icons.net/recent.html");
+				con = url.openConnection();
+			} catch (IOException e) {
+				status[0] = "Erreur de creation d'url";
+				e.printStackTrace();
 				return status;
 			}
-			//ligne ci-haut est un faut cast: c'est deja un String[] de java (voir dlc.js)
-
 			
-        	for(int counter=0; counter<urlArray.length; counter++) {
-        		URL curUrl;
+	        BufferedReader in;
+			try {
+				in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			} catch (IOException e) {
+				status[0] = "Erreur de creation de bufferedReader";
+				e.printStackTrace();
+				return status;
+			}
+			
+	        String html = "";
+	        try {
+	        	String str;
+				while ((str = in.readLine()) !=null) {
+				    html+=str;
+				}
+			} catch (IOException e) {
+				status[0] = "Erreur de traitement du document HTML";
+				e.printStackTrace();
+				return status;
+			}
+	        
+	        int startIndex=0;
+	        String searcher = "img src=\"";
+	        String startStr = "http://game-icons.net";
+	        int searcherL = searcher.length();
+	        for(int counter=0; counter<82; counter++) {
+	        	int next = searcherL+html.indexOf(searcher, startIndex);
+	        	int nextParen = html.indexOf(".svg", next);
+	        	
+	        	startIndex = nextParen+4;
+	        	
+	        	Path curPath = Paths.get("nki/tempImg/"+counter+".svg");
+	        	URL curUrl;
 				try {
-					curUrl = new URL(urlArray[counter]);
+					curUrl = new URL(startStr+ html.substring(next, nextParen)+".svg");
 				} catch (MalformedURLException e1) {
-					status[0] = "Erreur: mauvais url";
+					status[0] = "Erreur: url de svg est errone";
 					e1.printStackTrace();
 					return status;
 				}
-        		Path curPath = Paths.get("nki/tempImg/"+counter+".svg");
-        		
-        		try (InputStream in = curUrl.openStream()) {
-        		    Files.copy(in, curPath, StandardCopyOption.REPLACE_EXISTING);
+				try (InputStream dwnld = curUrl.openStream()) {
+        		    Files.copy(dwnld, curPath, StandardCopyOption.REPLACE_EXISTING);
         		} catch (Exception e){
         			e.printStackTrace();
         			status[0] = "Une erreur de telechargement de game-icons.net est survenue";
         			return status;
-        		}            		
-        	}
+        		} 
+	        }
+
         	status[0] = "Telechargement avec succes. Traitement...";
         	status[1] = "false";
         	return status;
@@ -201,20 +231,25 @@ public class Controller {
 		String[] status = {"","false"};
 		
 		for(int counter=0; counter<82; counter++) {
-			Image oldImg = new Image("nki/tempImg/"+counter+".svg", 50, 50, false, false);
+			Image oldImg = new Image("File:nki/tempImg/"+counter+".svg", 50, 50, false, false);
 			
-			BufferedImage newImg = SwingFXUtils.fromFXImage(oldImg, null);
+			
+			Image transpImg = new Image("File:nki/tempImg/transparentTemplate.png");
+			BufferedImage newImg = SwingFXUtils.fromFXImage(transpImg, null);
 			
 			//https://stackoverflow.com/questions/27462758/how-to-replace-color-with-another-color-in-bufferedimage
-			int target = Color.BLACK.getRGB();
-			int preferred = new Color(00, 00, 00, 00).getRGB();
-			int color;
-			for (int i = 0; i <50; i++) {
-		        for (int j = 0; j <50; j++) {
-		            color = newImg.getRGB(i, j);
-		            if (color == target) {
-		                newImg.setRGB(i, j, preferred);
-		            }
+			//https://www.javamex.com/tutorials/graphics/bufferedimage_setrgb.shtml
+			int r = 255;// red component 0...255
+			int g = 255;// green component 0...255
+			int b = 255;// blue component 0...255
+			int a = 100;// alpha (transparency) component 0...255
+			int col = (a << 24) | (r << 16) | (g << 8) | b;
+
+			for (int x = 0; x <50; x++) {
+		        for (int y = 0; y <50; y++) {
+		        	if(oldPixels.getColor(x, y) == Color.WHITE) {
+		        		newImg.setRGB(x, y, col);
+		        	}
 		        }
 		    }
 			
@@ -230,7 +265,7 @@ public class Controller {
 			}
 			
 		}
-		
+		 
 		status[0] = "Image rapetisee et recoloriee avec succes";
 		return status;
 		
