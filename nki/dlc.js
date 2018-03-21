@@ -9,10 +9,13 @@ nki/tempImg/counter.png
 */
 
 var func = function() {
+    //https://stackoverflow.com/questions/9236692/create-a-dom-document-from-an-url
+    URL url = new URL("game-icons.net/recent.html");
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder db = dbf.newDocumentBuilder();
+    Document doc = db.parse(url.openStream());
 
-    document = game-icons.net/recent.html;
-
-    var icons = document.getElementsByClassName('icon');
+    var icons = doc.getElementsByClassName('icon');
     var finalIcons = new Array();
 
     for(var counter=0; counter<icons.length; counter++) {
