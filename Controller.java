@@ -1,4 +1,5 @@
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,8 +31,12 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 public class Controller {
@@ -193,7 +199,7 @@ public class Controller {
 	        String searcher = "img src=\"";
 	        String startStr = "http://game-icons.net";
 	        int searcherL = searcher.length();
-	        for(int counter=0; counter<82; counter++) {
+	        for(int counter=0; counter<83; counter++) {
 	        	int next = searcherL+html.indexOf(searcher, startIndex);
 	        	int nextParen = html.indexOf(".svg", next);
 	        	
@@ -230,39 +236,49 @@ public class Controller {
 	public String[] resizeAndColorDLC() {
 		String[] status = {"","false"};
 		
-		for(int counter=0; counter<82; counter++) {
-			Image oldImg = new Image("File:nki/tempImg/"+counter+".svg", 50, 50, false, false);
+		for(int counter=0; counter<83; counter++) {
+			final Canvas oldCanvas = new Canvas(512,512);
+			GraphicsContext gc = oldCanvas.getGraphicsContext2D();
 			
-			
-			Image transpImg = new Image("File:nki/tempImg/transparentTemplate.png");
-			BufferedImage newImg = SwingFXUtils.fromFXImage(transpImg, null);
-			
-			//https://stackoverflow.com/questions/27462758/how-to-replace-color-with-another-color-in-bufferedimage
-			//https://www.javamex.com/tutorials/graphics/bufferedimage_setrgb.shtml
-			int r = 255;// red component 0...255
-			int g = 255;// green component 0...255
-			int b = 255;// blue component 0...255
-			int a = 100;// alpha (transparency) component 0...255
-			int col = (a << 24) | (r << 16) | (g << 8) | b;
-
-			for (int x = 0; x <50; x++) {
-		        for (int y = 0; y <50; y++) {
-		        	if(oldPixels.getColor(x, y) == Color.WHITE) {
-		        		newImg.setRGB(x, y, col);
-		        	}
-		        }
-		    }
-			
-			File outputPath = new File("nki/tempImg/"+counter+".png");
-		
+			String svg;
 			try {
-				ImageIO.write(newImg, "png", outputPath);
-			} catch (IOException e) {
-				e.printStackTrace();
-				status[0] = "Une erreur d'ecriture est survenue";
-				status[1] = "true";
+				svg = new String(Files.readAllBytes(Paths.get("nki/tempImg/"+counter+".svg")));
+			} catch (IOException e1) {
+				status[0] = "Erreur lors de la lecture des svg";
+				e1.printStackTrace();
 				return status;
 			}
+			int startIndex=0;
+			String[] svgPaths = new String[2];
+	        String searcher = "path d=\"";
+	        int searcherL = searcher.length();
+	        for(int i=0; i<2; i++) {
+	        	int next = searcherL+svg.indexOf(searcher, startIndex);
+	        	int nextParen = svg.indexOf("\"", next);
+	        	startIndex = nextParen+4;
+	        	
+	        	svgPaths[i] = svg.substring(next, nextParen)+".svg";
+	        }
+	        
+	        gc.setFill(Color.BLACK);
+	        gc.setStroke(Color.BLACK);
+	        gc.appendSVGPath(svgPaths[1]);
+	        gc.fill();
+	        gc.stroke();
+	        
+	        SnapshotParameters sp = new SnapshotParameters();
+	        WritableImage wi = new WritableImage((int)oldCanvas.getWidth(),(int)oldCanvas.getHeight());
+	        WritableImage snapShot = oldCanvas.snapshot(sp, wi);
+	        File outputPath = new File("nki/tempImg/"+counter+".png");
+	        
+	        try {
+				ImageIO.write(SwingFXUtils.fromFXImage(snapShot, null), "png", outputPath);
+			} catch (IOException e) {
+				status[0] = "Erreur lors de la sauvegarde des nouveaux png";
+				e.printStackTrace();
+				return status;
+			}
+
 			
 		}
 		 
