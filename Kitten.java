@@ -13,6 +13,7 @@ public class Kitten extends Case {
 		this.nom = nom;
 		this.pos = pos;
 		this.representation = getRandomSymbole();
+		this.sound = "kitten.wav";	//https://freesound.org/people/tuberatanka/sounds/110011/
 	}
 	
 	/**
@@ -33,8 +34,9 @@ public class Kitten extends Case {
 	 * @param robot Le robot qui interagit avec le kitten
 	 */
 	
-	public String interagir(Robot robot) {
+	public String[] interagir(Robot robot) {
 		robot.foundKitten();
-		return this.nom+" <3 "+robot.getNom();
+		String[] temp = {this.nom+" <3 "+robot.getNom(), sound}; 
+		return temp;
 	}
 }

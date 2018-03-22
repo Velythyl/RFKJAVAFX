@@ -1,0 +1,41 @@
+﻿Nouvelle logique du jeu: RobotFindsKitten a la grille et le robot.
+Le controlleur a le RobotFindsKitten, et le GUI a le controlleur. Lors de
+l'initialisation du jeu, on demande un tour INIT a controlleur, qui le demande
+au RobotFindsKitten. On retourne les bons messages et la grille entière.
+
+Lors des autres tours, on retourne les bons messages, le winCondition, les
+changements d'apparence de la grille à deux coordonnées et le son a jouer (voir
+    bonus 1).
+
+J'ai décidé de faire le bonus 1 et 3.
+
+Pour le 1, j'ai créé une loop musicale joue lors du déroulement normal du jeu,
+et une loop qui joue lors de la victoire.
+
+Normalement, la musique de jeu joue jusqu'à la fin de l'enregistrement. Avec un
+event sur sa fin, je la repars avec seek (Duration.0).
+Lorsqu'on gagne, la loop du jeu est mise sur pause et celle de victoire est mise
+sur play(). Elle utilise le même principe d'event.
+
+De plus, lorsque le robot passe sur une case, on joue un son approprié. J'ai
+modifié la méthode interagir: elle retourne maintenant un String[] de forme
+{String d'interaction, son}. Dans RobotFindsKitten, on traite les choses
+nécéssaires à un Turn (grille, tableau de textes, winCondition, tableau de
+    string de forme repRobot:x:y:repAutre:x:y, son) et on retourne le Turn au
+controlleur puis au GUI. Le GUI demande le son au Turn et le fait jouer.
+
+Pour le 3, j'ai créé des methodes DLC dans le controller. Elles sont là car ce
+n'est pas de la logique de jeu, et que ce n'est pas de la logique de vue.
+
+Comme défi personnel, je n'ai pas utilisé de librairies externes. Tout est en
+jdk9 natif.
+
+Il y a 3 methodes importantes: getDLC download les DLC, resizeAndColorDLC 
+les rapetisse et remplace le noir par du transparent, et parseDLC les colle
+au dessus du back.png utilisé dans notre affichage.
+
+J'ai aussi un boolean dlc dans le controller. S'il est vrai, le gui change le 
+directory dans lequel il va chercher les images. Les images de DLC suivent les
+mêmes noms que les images originales.
+
+Voir les commentaires du controller pour plus de détails.

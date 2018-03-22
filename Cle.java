@@ -1,4 +1,5 @@
 public class Cle extends Case {
+	private boolean pickedUp;
 	
 	/**
 	 * Le constructeur des Cles
@@ -10,6 +11,8 @@ public class Cle extends Case {
 	public Cle (Point pos) {
 		this.pos = pos;
 		this.representation = "key.png";
+		this.sound = "key.wav"; //https://freesound.org/people/Davidsraba/sounds/347172/
+		this.pickedUp = false;
 	}
 	
 	/**
@@ -19,7 +22,7 @@ public class Cle extends Case {
 	 * @param robot Le robot qui tente d'interagir avec la cle
 	 */
 	public boolean interactionPossible(Robot robot) {
-		if(this.representation != "back.png") {
+		if(this.pickedUp == false) {
 			return true;
 		}
 		else {
@@ -36,10 +39,19 @@ public class Cle extends Case {
 	 * 
 	 * @param robot Le robot qui interagit avec la cle
 	 */
-	public String interagir(Robot robot) {
+	public String[] interagir(Robot robot) {
 		robot.foundKey();
 		this.representation = "back.png";
-		return "Vous avez trouve une cle! Vous avez "+robot.getKey()+" cles";
+		
+		String soundSorter = "";
+		if(this.pickedUp == false) {
+			soundSorter = sound;
+			pickedUp = true;
+			this.sound = "footstep.wav";
+		} else soundSorter = sound;
+	
+		String[] temp = {"Vous avez trouve une cle! Vous avez "+robot.getKey()+" cles", soundSorter};
+		return temp;
 	}
 	
 }

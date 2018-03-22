@@ -423,6 +423,7 @@ public class NonKitten extends Case {
 		this.pos = pos;
 		this.flavorText = genererFlavorText();
 		this.representation = getRandomSymbole();
+		this.sound = "footstep.wav";	//https://freesound.org/people/swuing/sounds/38873/
 	}
 	
 	/**
@@ -461,7 +462,8 @@ public class NonKitten extends Case {
 	 * 
 	 * @param robot Le robot qui interagit avec le NonKitten
 	 */
-	public String interagir(Robot robot) {
-		return this.flavorText;
+	public String[] interagir(Robot robot) {
+		String[] temp = {this.flavorText, sound};
+		return temp;
 	}
 }

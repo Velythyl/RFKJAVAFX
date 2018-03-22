@@ -10,7 +10,8 @@ public class Mur extends Case {
 	 */
 	public Mur (Point pos) {
 		this.pos = pos;
-		this. representation = "wall.png";
+		this.representation = "wall.png";
+		this.sound = "";	//bidon
 	}
 	
 	/**
@@ -28,7 +29,8 @@ public class Mur extends Case {
 	 * 
 	 * @param robot Le robot qui interagirait avec le mur
 	 */
-	public String interagir(Robot robot) {
-		return "";
+	public String[] interagir(Robot robot) {
+		String[] temp = {"",""};
+		return temp;
 	}
 }
